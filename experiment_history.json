@@ -1,0 +1,181 @@
+{
+  "run_1": {
+    "hyperparameters": {
+      "LORA_R": 8,
+      "LORA_ALPHA": 24,
+      "LORA_DROPOUT": 0.1,
+      "LORA_TARGET_MODULES": ["q_proj", "v_proj"],
+      "LORA_BIAS": "none",
+      "USE_DORA": false,
+      "USE_RSLORA": false,
+      "LEARNING_RATE": 5e-4,
+      "BATCH_SIZE": 1,
+      "GRAD_ACCUM": 1,
+      "EPOCHS": 5,
+      "WEIGHT_DECAY": 0.01,
+      "WARMUP_RATIO": 0.1,
+      "LR_SCHEDULER": "cosine"
+    },
+    "reasoning": {
+      "LORA_R": "Small dataset (1909 samples) requires low rank to prevent overfitting; r=8 is conservative for this size.",
+      "LORA_ALPHA": "Set alpha=24 (3x rank) to increase effective rank and boost signal for imbalanced minority classes.",
+      "LORA_DROPOUT": "Moderate dropout (0.1) provides regularization without excessive suppression; balanced for small dataset.",
+      "LORA_TARGET_MODULES": "Focus on query and value projections, which best capture semantic structure in text encoding.",
+      "LEARNING_RATE": "5e-4 is conservative for small dataset; avoids large gradient steps that could destabilize with sparse minority classes.",
+      "BATCH_SIZE": "Batch size 1 is small to ensure diverse class representation in each gradient step, countering class imbalance.",
+      "GRAD_ACCUM": "Gradient accumulation=1 balances effective batch size while maintaining learning signal diversity per step.",
+      "EPOCHS": "5 epochs allows multiple passes through small dataset without excessive memorization; with early stopping can terminate early.",
+      "WEIGHT_DECAY": "0.01 provides mild L2 regularization to prevent overfitting on limited data.",
+      "WARMUP_RATIO": "0.1 warmup ratio stabilizes early training when minority classes are underrepresented in initial batches.",
+      "LR_SCHEDULER": "Cosine scheduler provides smooth decay, beneficial for fine-grained tuning on small datasets."
+    },
+    "metrics": {
+      "accuracy": 0.8668341708542714,
+      "precision": 0.8306569099514639,
+      "recall": 0.844797267791213,
+      "f1_score": 0.8366344556695867,
+      "macro_f1": 0.8366344556695867
+    },
+    "result": "baseline",
+    "status": "baseline",
+    "result_analysis": "Run 1 completed successfully on the small, imbalanced training set. The model achieved 0.8668 accuracy with low batch size and no gradient accumulation, indicating stable convergence for this baseline. The metrics suggest the current setup is a strong starting point before exploring finer adjustments to LoRA rank or alpha."
+  },
+  "run_2": {
+    "prior_run_analysis": {
+      "baseline_run": "run_1",
+      "baseline_accuracy": 0.8668341708542714,
+      "what_was_tried": "One baseline configuration using LORA_R=8, LORA_ALPHA=24, dropout=0.1, lr=5e-4, batch_size=1, grad_accum=1, epochs=5.",
+      "lessons": "The first run showed stable convergence on the small, imbalanced dataset with a strong accuracy baseline. There were no discarded runs yet, so the next change should be small and targeted.",
+      "data_insights_used": "Train size 1909, class imbalance ratio 3.81, lexical diversity 0.3531. These indicate the model should avoid over-parameterization and keep batch size low while still allowing the LoRA adapter to adapt effectively.",
+      "decision_summary": "Keep batch size and gradient accumulation at 1 per the current request; reduce learning rate to improve convergence stability and lower dropout slightly to allow stronger adaptation without removing the regularization entirely."
+    },
+    "hyperparameters": {
+      "LORA_R": 8,
+      "LORA_ALPHA": 24,
+      "LORA_DROPOUT": 0.05,
+      "LORA_TARGET_MODULES": ["q_proj", "v_proj"],
+      "LORA_BIAS": "none",
+      "USE_DORA": false,
+      "USE_RSLORA": false,
+      "LEARNING_RATE": 3e-4,
+      "BATCH_SIZE": 1,
+      "GRAD_ACCUM": 1,
+      "EPOCHS": 5,
+      "WEIGHT_DECAY": 0.01,
+      "WARMUP_RATIO": 0.1,
+      "LR_SCHEDULER": "cosine"
+    },
+    "reasoning": {
+      "LORA_R": "Maintain the low rank from the successful baseline to avoid overfitting given the small dataset.",
+      "LORA_ALPHA": "Keep alpha at 24 to preserve effective LoRA scaling while changing only the training dynamics.",
+      "LORA_DROPOUT": "Reduce dropout slightly from 0.1 to 0.05 so the adapter can adapt more strongly without losing too much regularization.",
+      "LORA_TARGET_MODULES": "Retain q_proj and v_proj to keep the same parameter focus that worked in the baseline.",
+      "LEARNING_RATE": "Lower the learning rate from 5e-4 to 3e-4 to improve stability and reduce potential overshooting during fine-tuning.",
+      "BATCH_SIZE": "Keep batch size at 1, as requested and because the dataset is small and imbalanced.",
+      "GRAD_ACCUM": "Keep gradient accumulation at 1 to maintain a direct gradient signal per sample.",
+      "EPOCHS": "Keep 5 epochs to limit training time while allowing the model enough passes through the small dataset.",
+      "WEIGHT_DECAY": "Keep mild weight decay at 0.01 to preserve some regularization for the small dataset.",
+      "WARMUP_RATIO": "Retain 0.1 warmup ratio to stabilize early updates on the imbalanced data.",
+      "LR_SCHEDULER": "Keep cosine scheduler for smooth decay during fine-tuning."
+    },
+    "metrics": {
+      "accuracy": 0.8467336683417085,
+      "precision": 0.7957161984726803,
+      "recall": 0.8430638091136947,
+      "f1_score": 0.8164757636559997,
+      "macro_f1": 0.8164757636559997
+    },
+    "result": "discarded",
+    "status": "discarded",
+    "result_analysis": "Run 2 reduced learning rate and dropout but lost accuracy versus the baseline. This suggests the baseline learning dynamics were preferable; the next run should restore the baseline learning rate and test a more conservative capacity adjustment."
+  },
+  "run_3": {
+    "prior_run_analysis": {
+      "baseline_run": "run_1",
+      "baseline_accuracy": 0.8668341708542714,
+      "recent_run": "run_2",
+      "recent_accuracy": 0.8467336683417085,
+      "what_was_tried": "Run 2 lowered learning rate to 3e-4 and reduced dropout to 0.05 while keeping LoRA rank at 8.",
+      "lessons": "Performance dropped vs baseline (0.8467 vs 0.8668). Likely causes: reduced learning rate slowed adaptation, and reduced dropout may have altered regularization balance. A modest capacity increase may help if training dynamics are restored.",
+      "data_insights_used": "Train size 1909, class imbalance ratio 3.81 — keep batch size small; prefer conservative capacity increases.",
+      "decision_summary": "Revert learning rate and dropout to baseline values that previously worked, and increase LoRA rank modestly from 8→12 to give adapter more capacity. Increase epochs to 6 to allow additional adaptation. Keep batch size and grad_accum at 1."
+    },
+    "hyperparameters": {
+      "LORA_R": 12,
+      "LORA_ALPHA": 24,
+      "LORA_DROPOUT": 0.1,
+      "LORA_TARGET_MODULES": ["q_proj", "v_proj"],
+      "LORA_BIAS": "none",
+      "USE_DORA": false,
+      "USE_RSLORA": false,
+      "LEARNING_RATE": 5e-4,
+      "BATCH_SIZE": 1,
+      "GRAD_ACCUM": 1,
+      "EPOCHS": 6,
+      "WEIGHT_DECAY": 0.01,
+      "WARMUP_RATIO": 0.1,
+      "LR_SCHEDULER": "cosine"
+    },
+    "reasoning": {
+      "LORA_R": "Increase rank to allow richer adapter capacity; modest increase (12) balances capacity vs overfitting risk on small data.",
+      "LORA_ALPHA": "Keep alpha at 24 to preserve effective scaling.",
+      "LORA_DROPOUT": "Revert to 0.1 to restore regularization that correlated with the best baseline run.",
+      "LEARNING_RATE": "Restore LR to 5e-4 since reducing it in run_2 coincided with worse performance.",
+      "EPOCHS": "Increase to 6 to give additional training time for the larger adapter to converge, with early stopping enabled.",
+      "BATCH_SIZE": "Keep at 1 to respect class imbalance and user request.",
+      "GRAD_ACCUM": "Keep at 1 to maintain direct per-sample gradient signals."
+    },
+    "metrics": {
+      "accuracy": 0.8576214405360134,
+      "precision": 0.8234934258878889,
+      "recall": 0.8258210944861538,
+      "f1_score": 0.8228729532810061,
+      "macro_f1": 0.8228729532810061
+    },
+    "result": "discarded",
+    "status": "discarded",
+    "result_analysis": "Run 3 improved fit over run 2 but still underperformed the baseline. Higher LoRA rank increased capacity but likely led to overfitting on this small dataset, so the next run should restore rank and baseline learning dynamics while allowing a slightly stronger adapter adaptation."
+  },
+  "run_4": {
+    "prior_run_analysis": {
+      "baseline_run": "run_1",
+      "baseline_accuracy": 0.8668341708542714,
+      "recent_run": "run_3",
+      "recent_accuracy": 0.8576214405360134,
+      "what_was_tried": "Run 3 restored baseline learning rate and dropout while increasing LoRA rank to 12 and epochs to 6.",
+      "lessons": "The increase in rank did not surpass baseline accuracy, indicating the small dataset benefits more from the original rank and training dynamics. A more conservative run should restore rank and reduce dropout to give the model flexibility while maintaining baseline LR.",
+      "data_insights_used": "Train size 1909 and class imbalance ratio 3.81 support keeping batch size small and avoiding overly large adapter capacity.",
+      "decision_summary": "Restore LoRA rank to 8, keep baseline learning rate at 5e-4, reduce dropout to 0.05 to encourage adaptation, and keep epochs at 6 for more training time."
+    },
+    "hyperparameters": {
+      "LORA_R": 8,
+      "LORA_ALPHA": 24,
+      "LORA_DROPOUT": 0.05,
+      "LORA_TARGET_MODULES": ["q_proj", "v_proj"],
+      "LORA_BIAS": "none",
+      "USE_DORA": false,
+      "USE_RSLORA": false,
+      "LEARNING_RATE": 5e-4,
+      "BATCH_SIZE": 1,
+      "GRAD_ACCUM": 1,
+      "EPOCHS": 6,
+      "WEIGHT_DECAY": 0.01,
+      "WARMUP_RATIO": 0.1,
+      "LR_SCHEDULER": "cosine"
+    },
+    "reasoning": {
+      "LORA_R": "Return to the smaller rank that performed best in the baseline run to avoid overfitting on this small dataset.",
+      "LORA_ALPHA": "Keep alpha at 24 to preserve the baseline effective scaling.",
+      "LORA_DROPOUT": "Lower dropout to 0.05 to give the adapter more flexibility while still retaining regularization.",
+      "LEARNING_RATE": "Keep baseline learning rate at 5e-4 since prior reductions hurt performance.",
+      "EPOCHS": "Use 6 epochs to allow more training time with the restored baseline rank and learning dynamics.",
+      "BATCH_SIZE": "Maintain 1 as requested and appropriate for the dataset imbalance.",
+      "GRAD_ACCUM": "Maintain 1 to preserve the direct gradient signal per sample."
+    },
+    "metrics": null,
+    "result": null,
+    "status": "running",
+    "result_analysis": null
+  }
+}
+
