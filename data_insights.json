@@ -1,0 +1,16 @@
+{
+  "train_size": 1909,
+  "num_classes": 3,
+  "class_counts": {
+    "neutral": 1195,
+    "positive": 400,
+    "negative": 314
+  },
+  "class_imbalance_ratio": 3.81,
+  "lexical_diversity": {
+    "total_words": 23328,
+    "unique_words": 8236,
+    "type_token_ratio": 0.3531
+  },
+  "quality_ok": true
+}

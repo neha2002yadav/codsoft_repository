@@ -1,0 +1,79 @@
+{
+    "dataset_size": {
+        "rows": 1909,
+        "columns": 2,
+        "memory_usage_MB": 0.4
+    },
+    "class_distribution": {
+        "counts": {
+            "neutral": 1195,
+            "positive": 400,
+            "negative": 314
+        },
+        "percentages": {
+            "neutral": 62.6,
+            "positive": 20.95,
+            "negative": 16.45
+        },
+        "imbalance_ratio": 3.81
+    },
+    "missing_values": {
+        "missing_text": 0,
+        "missing_label": 0,
+        "empty_text": 0
+    },
+    "duplicates": {
+        "duplicate_texts": 0,
+        "duplicate_text_label_pairs": 0,
+        "duplicate_percentage": 0.0
+    },
+    "text_length_statistics": {
+        "min_words": 1,
+        "max_words": 26,
+        "mean_words": 12.22,
+        "median_words": 12.0,
+        "std_words": 4.19,
+        "25_percentile": 9.0,
+        "75_percentile": 15.0
+    },
+    "character_statistics": {
+        "min_characters": 16,
+        "max_characters": 187,
+        "mean_characters": 88.66,
+        "median_characters": 80.0
+    },
+    "vocabulary_statistics": {
+        "total_words": 26988,
+        "unique_words": 6970,
+        "vocabulary_richness": 0.2583
+    },
+    "average_word_frequency": 3.87,
+    "label_entropy": 1.3238,
+    "words_per_sample": {
+        "mean": 12.22,
+        "median": 12.0
+    },
+    "sentence_statistics": {
+        "mean_sentences": 2.0,
+        "max_sentences": 6
+    },
+    "text_density": {
+        "average_word_length": 5.07,
+        "average_sentence_length": 6.1
+    },
+    "special_character_statistics": {
+        "average_urls": 0.56,
+        "average_mentions": 0.02,
+        "average_hashtags": 0.35,
+        "average_numbers": 0.42,
+        "average_punctuation": 5.75
+    },
+    "case_statistics": {
+        "uppercase_percentage": 14.91,
+        "lowercase_percentage": 85.09
+    },
+    "language_quality_statistics": {
+        "average_repeated_character_sequences": 0.22,
+        "whitespace_only_samples": 0
+    }
+}
